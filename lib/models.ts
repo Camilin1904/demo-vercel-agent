@@ -12,13 +12,9 @@ export type ModelId = (typeof MODELS)[number]['id'];
 
 export const DEFAULT_MODEL: ModelId = 'anthropic/claude-sonnet-5.5';
 
-export function isModelId(value: unknown): value is ModelId {
-  return MODELS.some((m) => m.id === value);
-}
-
 export function modelLabel(id: string | undefined) {
   return MODELS.find((m) => m.id === id)?.label ?? id;
 }
 
 // The server tags each assistant reply with the model that produced it.
-export type ChatMessage = UIMessage<{ model: ModelId }>;
+export type ChatMessage = UIMessage<{ model: string }>;
