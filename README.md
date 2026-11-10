@@ -22,3 +22,16 @@ On Vercel no API key is needed — the deployment authenticates to AI Gateway wi
 - `app/api/chat/route.ts` — `streamText` with a `"provider/model"` string, which the AI SDK routes through AI Gateway.
 - `app/page.tsx` — chat UI using `useChat` from `@ai-sdk/react`.
 - `lib/models.ts` — models offered in the dropdown. Add any id from https://vercel.com/ai-gateway/models.
+- `lib/prompt.ts` — the system instructions, shared with the eval twin below.
+
+## Evals
+
+[eve](https://github.com/vercel/eve) evals only talk to an eve agent, so `agent/` holds an eval-only twin of `/api/chat`: same instructions (`lib/prompt.ts`), same model allowlist, no tools. It is not deployed.
+
+```bash
+npm run evals                          # every eval in evals/, against each model in lib/models.ts
+npm run evals -- --exclude-tag judge   # only the deterministic evals
+npm run evals -- --repeat 3 --strict   # 3 attempts each; soft-score misses fail too
+```
+
+The script loads `AI_GATEWAY_API_KEY` from `.env` / `.env.local`, prints a model × eval matrix, and saves it under `.eve/model-matrix/`.

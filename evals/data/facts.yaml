@@ -1,0 +1,17 @@
+# One eval per row: the reply must match `expect` (a case-insensitive regular expression).
+evals:
+  - task: Multiplication
+    prompt: What is 17 times 23? Reply with just the number.
+    expect: '\b391\b'
+  - task: Unit conversion
+    prompt: How many meters are in 5 kilometers?
+    expect: '\b5,?000\b'
+  - task: Chemistry
+    prompt: What is the chemical symbol for gold?
+    expect: '\bAu\b'
+  - task: Calendar
+    prompt: How many days are in a leap year?
+    expect: '\b366\b'
+  - task: Geography
+    prompt: Which is the largest ocean on Earth?
+    expect: 'pacific'

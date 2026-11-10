@@ -1,5 +1,6 @@
 import { convertToModelMessages, streamText } from 'ai';
 import { DEFAULT_MODEL, type ChatMessage } from '@/lib/models';
+import { CHAT_INSTRUCTIONS } from '@/lib/prompt';
 
 export const maxDuration = 30;
 
@@ -12,7 +13,7 @@ export async function POST(req: Request) {
     // A plain "provider/model" string is routed through Vercel AI Gateway.
     // Auth: AI_GATEWAY_API_KEY locally, or the OIDC token automatically on Vercel.
     model: modelId,
-    instructions: 'You are a friendly, concise assistant running in a Vercel AI Gateway demo.',
+    instructions: CHAT_INSTRUCTIONS,
     messages: convertToModelMessages(messages),
   });
 

@@ -5,11 +5,13 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "evals": "node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/run-evals.ts"
   },
   "dependencies": {
     "@ai-sdk/react": "^4.0.170",
     "ai": "^7.0.166",
+    "eve": "^1.0.0-rc.8",
     "next": "^16.4.5",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
