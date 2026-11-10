@@ -26,7 +26,7 @@ On Vercel no API key is needed — the deployment authenticates to AI Gateway wi
 
 ## Evals
 
-[eve](https://github.com/vercel/eve) evals only talk to an eve agent, so `agent/` holds an eval-only twin of `/api/chat`: same instructions (`lib/prompt.ts`), same model allowlist, no tools. It is not deployed.
+[eve](https://github.com/vercel/eve) evals only talk to an eve agent, so `agent/` holds an eval-only twin of `/api/chat`: same instructions (`lib/prompt.ts`), same model allowlist, no tools. `withEve` in `next.config.ts` ships it with every deployment at `/eve/v1/*`, where it accepts only Vercel OIDC tokens for this project (`agent/channels/eve.ts`), so the public can't reach it.
 
 ```bash
 npm run evals                          # every eval in evals/, against each model in lib/models.ts
@@ -35,3 +35,9 @@ npm run evals -- --repeat 3 --strict   # 3 attempts each; soft-score misses fail
 ```
 
 The script loads `AI_GATEWAY_API_KEY` from `.env` / `.env.local`, prints a model × eval matrix, and saves it under `.eve/model-matrix/`.
+
+To run the evals against a deployment (it uses the deployed default model), from a folder linked to this Vercel project:
+
+```bash
+npx eve eval --url https://<deployment-url>
+```
