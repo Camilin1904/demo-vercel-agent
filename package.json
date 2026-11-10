@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "evals": "node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/run-evals.ts"
+    "evals": "node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/run-evals.ts",
+    "evals:remote": "npx --yes -p vercel@65.14.0 -- node --env-file-if-exists=.env --env-file-if-exists=.env.local node_modules/eve/bin/eve.js eval --url"
   },
   "dependencies": {
     "@ai-sdk/react": "^4.0.170",

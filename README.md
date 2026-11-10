@@ -36,8 +36,10 @@ npm run evals -- --repeat 3 --strict   # 3 attempts each; soft-score misses fail
 
 The script loads `AI_GATEWAY_API_KEY` from `.env` / `.env.local`, prints a model × eval matrix, and saves it under `.eve/model-matrix/`.
 
-To run the evals against a deployment (it uses the deployed default model), from a folder linked to this Vercel project:
+To run the evals against a deployment (the deployed twin uses the default model), from a folder linked to this Vercel project:
 
-```bash
-npx eve eval --url https://<deployment-url>
-```
+1. In Vercel → **Settings → Deployment Protection**, create a **Protection Bypass for Automation** secret and add it to `.env` as `VERCEL_AUTOMATION_BYPASS_SECRET`.
+2. Run `npx vercel env pull .env.local` to get a `VERCEL_OIDC_TOKEN` (valid 12 hours) that the agent accepts.
+3. Run `npm run evals:remote -- https://<deployment-url>`, adding eval ids after the URL to run only some.
+
+Before sending either credential, eve uses the Vercel CLI to check that the URL belongs to this project; the script puts the CLI on the `PATH` for that.
