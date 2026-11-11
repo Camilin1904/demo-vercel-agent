@@ -1,4 +1,11 @@
 // Helpers shared by the evals (not an eval itself: the file name doesn't end in .eval.ts).
+import { MODEL_HEADER } from '../lib/models';
+
+// Sends the model under test the way the chat page does. scripts/run-evals.ts sets EVAL_MODEL
+// once per model; without it the agent uses its default model.
+export function modelHeaders(): Record<string, string> {
+  return process.env.EVAL_MODEL ? { [MODEL_HEADER]: process.env.EVAL_MODEL } : {};
+}
 
 export function wordCount(text: string | undefined) {
   return (text ?? '').split(/\s+/).filter(Boolean).length;

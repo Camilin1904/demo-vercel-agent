@@ -1,12 +1,15 @@
 import { defineAgent } from 'eve';
-import { DEFAULT_MODEL, MODELS } from '../lib/models';
+import { defineDynamic } from 'eve/models';
+import { DEFAULT_MODEL, isModelId } from '../lib/models';
 
-// eve twin of /api/chat, used only by the evals in evals/. EVAL_MODEL picks which of the
-// chatbot's models it runs (only ids in MODELS); scripts/run-evals.ts sets it once per model.
-const model = MODELS.find((m) => m.id === process.env.EVAL_MODEL)?.id ?? DEFAULT_MODEL;
-
+// The chat agent behind the page and the evals. The model comes from the x-chat-model header,
+// which agent/channels/eve.ts copies into the caller's attributes. Any visitor can set that
+// header, so only ids in MODELS are honored.
 export default defineAgent({
-  model,
-  // The chatbot has no tools, so neither does its twin.
+  model: defineDynamic((ctx) => {
+    const requested = ctx.session.auth.current?.attributes.model;
+    return isModelId(requested) ? requested : DEFAULT_MODEL;
+  }),
+  // The chatbot has no tools.
   defaultTools: false,
 });

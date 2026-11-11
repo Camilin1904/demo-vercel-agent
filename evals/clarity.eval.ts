@@ -1,11 +1,13 @@
 import { defineEval } from 'eve/evals';
-import { brevity } from './shared';
+import { brevity, modelHeaders } from './shared';
 
 export default defineEval({
   description: 'A technical idea is explained plainly and briefly to a non-technical reader.',
   tags: ['judge'],
   async test(t) {
-    const turn = await t.send('Explain what an API rate limit is to someone who has never written code.');
+    const turn = await t.send('Explain what an API rate limit is to someone who has never written code.', {
+      headers: modelHeaders(),
+    });
     t.succeeded();
     t.judge({
       type: 'score',

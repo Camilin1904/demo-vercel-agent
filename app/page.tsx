@@ -1,24 +1,35 @@
 'use client';
 
-import { useChat } from '@ai-sdk/react';
+import { useEveAgent } from 'eve/react';
 import { useEffect, useRef, useState } from 'react';
-import { DEFAULT_MODEL, MODELS, modelLabel, type ChatMessage, type ModelId } from '@/lib/models';
+import { DEFAULT_MODEL, MODEL_HEADER, MODELS, modelLabel, type ModelId } from '@/lib/models';
 
 export default function Chat() {
   const [input, setInput] = useState('');
   const [model, setModel] = useState<ModelId>(DEFAULT_MODEL);
-  const { messages, sendMessage, status, stop, error } = useChat<ChatMessage>();
+  // Headers are resolved before every request, so a model switch applies to the next message.
+  const modelRef = useRef(model);
+  useEffect(() => {
+    modelRef.current = model;
+  }, [model]);
+  const agent = useEveAgent({ headers: () => ({ [MODEL_HEADER]: modelRef.current }) });
   const bottomRef = useRef<HTMLDivElement>(null);
-  const busy = status === 'submitted' || status === 'streaming';
+  const busy = agent.status !== 'idle';
+
+  // Which model answered each turn, from the agent's own events.
+  const modelByTurn = new Map<string, string>();
+  for (const event of agent.events) {
+    if (event.type === 'model.started' && event.scope?.turnId) modelByTurn.set(event.scope.turnId, event.data.modelId);
+  }
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, status]);
+  }, [agent.messages, agent.status]);
 
   function submit() {
     const text = input.trim();
     if (!text || busy) return;
-    sendMessage({ text }, { body: { model } });
+    void agent.send(text);
     setInput('');
   }
 
@@ -36,21 +47,22 @@ export default function Chat() {
       </header>
 
       <section className="messages">
-        {messages.length === 0 && (
+        {agent.messages.length === 0 && (
           <p className="empty">Ask anything. Switch models at any time — every request goes through Vercel AI Gateway.</p>
         )}
 
-        {messages.map((message) => (
-          <div key={message.id} className={`bubble ${message.role}`}>
-            {message.role === 'assistant' && message.metadata?.model && (
-              <span className="model-tag">{modelLabel(message.metadata.model)}</span>
-            )}
-            {message.parts.map((part, i) => (part.type === 'text' ? <span key={i}>{part.text}</span> : null))}
-          </div>
-        ))}
+        {agent.messages.map((message) => {
+          const answeredBy = message.metadata?.turnId ? modelByTurn.get(message.metadata.turnId) : undefined;
+          return (
+            <div key={message.id} className={`bubble ${message.role}`}>
+              {message.role === 'assistant' && answeredBy && <span className="model-tag">{modelLabel(answeredBy)}</span>}
+              {message.parts.map((part, i) => (part.type === 'text' ? <span key={part.id ?? i}>{part.text}</span> : null))}
+            </div>
+          );
+        })}
 
-        {status === 'submitted' && <div className="bubble assistant typing">Thinking…</div>}
-        {error && <div className="error">⚠ {error.message}</div>}
+        {busy && agent.messages.at(-1)?.role === 'user' && <div className="bubble assistant typing">Thinking…</div>}
+        {agent.error && <div className="error">⚠ {agent.error.message}</div>}
         <div ref={bottomRef} />
       </section>
 
@@ -74,7 +86,7 @@ export default function Chat() {
           autoFocus
         />
         {busy ? (
-          <button type="button" onClick={() => stop()}>
+          <button type="button" onClick={() => void agent.cancel()}>
             Stop
           </button>
         ) : (

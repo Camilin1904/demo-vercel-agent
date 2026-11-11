@@ -3,6 +3,6 @@ import { withEve } from 'eve/next';
 
 const nextConfig: NextConfig = {};
 
-// Mounts the eve twin in agent/ at /eve/v1/* (its own service on Vercel), so the evals can
-// run against any deployment with `eve eval --url`.
+// Mounts the chat agent in agent/ at /eve/v1/* (its own service on Vercel), where the page and
+// the evals (`eve eval --url`) reach it.
 export default withEve(nextConfig);

@@ -1,5 +1,6 @@
-// Runs the eve evals once per chatbot model (EVAL_MODEL picks the twin's model), then prints
-// a model x eval matrix and saves it to .eve/model-matrix/<timestamp>.json.
+// Runs the eve evals once per chatbot model (the evals send EVAL_MODEL to the chat agent in the
+// x-chat-model header, like the page does), then prints a model x eval matrix and saves it to
+// .eve/model-matrix/<timestamp>.json.
 //
 //   npm run evals                          every eval, every model
 //   npm run evals -- --exclude-tag judge   skip the judge-graded evals
