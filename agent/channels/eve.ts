@@ -14,8 +14,8 @@ const visitor: AuthFn<Request> = () => ({
 // (and validates) it.
 const withModel =
   (auth: AuthFn<Request>): AuthFn<Request> =>
-  async (request) => {
-    const caller = await auth(request);
+  (request) => {
+    const caller = auth(request);
     const model = request.headers.get(MODEL_HEADER);
     return caller && model ? { ...caller, attributes: { ...caller.attributes, model } } : caller;
   };

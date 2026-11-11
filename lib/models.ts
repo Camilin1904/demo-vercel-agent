@@ -13,10 +13,6 @@ export const DEFAULT_MODEL: ModelId = 'anthropic/claude-sonnet-5.5';
 // The chat page sends the picked model in this header with every message.
 export const MODEL_HEADER = 'x-chat-model';
 
-export function isModelId(value: unknown): value is ModelId {
-  return MODELS.some((m) => m.id === value);
-}
-
 export function modelLabel(id: string | undefined) {
   return MODELS.find((m) => m.id === id)?.label ?? id;
 }
